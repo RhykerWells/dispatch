@@ -15,7 +15,7 @@ type Arg struct {
 }
 
 type ArgumentType interface {
-	ValidateArg(arg *ParsedArg, data *Data) bool
+	ValidateArg(arg *ParsedArg, data *Data) (any, bool)
 	Help() string
 }
 
@@ -57,25 +57,23 @@ func (s *StringArg) Help() string {
 	return "Text"
 }
 
-func (s *StringArg) ValidateArg(arg *ParsedArg, data *Data) bool {
+func (s *StringArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
 	v := arg.Raw
 
 	if v == "" {
-		return false
+		return nil, false
 	}
 
 	if len(s.Options) > 0 {
 		for _, option := range s.Options {
 			if strings.EqualFold(v, option) {
-				arg.Value = v
-				return true
+				return v, true
 			}
 		}
-		return false
+		return nil, false
 	}
 
-	arg.Value = v
-	return true
+	return v, true
 }
 
 type IntArg struct {
@@ -91,22 +89,21 @@ func (i *IntArg) Help() string {
 	return fmt.Sprintf("Whole number above %d%s", i.Min, maxStr)
 }
 
-func (i *IntArg) ValidateArg(arg *ParsedArg, data *Data) bool {
+func (i *IntArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
     v, err := strconv.Atoi(arg.Raw)
     if err != nil {
-        return false
+        return nil, false
     }
 
     if v < i.Min {
-        return false
+        return nil, false
     }
 
     if i.Max != 0 && v > i.Max {
-        return false
+        return nil, false
     }
 
-    arg.Value = v
-    return true
+    return v, true
 }
 
 type Int64Arg struct {
@@ -122,22 +119,21 @@ func (i *Int64Arg) Help() string {
 	return fmt.Sprintf("Whole number above %d%s", i.Min, maxStr)
 }
 
-func (i *Int64Arg) ValidateArg(arg *ParsedArg, data *Data) bool {
+func (i *Int64Arg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
     v, err := strconv.ParseInt(arg.Raw, 10, 64)
     if err != nil {
-        return false
+        return nil, false
     }
 
     if v < i.Min {
-        return false
+        return nil, false
     }
 
     if i.Max != 0 && v > i.Max {
-        return false
+        return nil, false
     }
 
-    arg.Value = v
-    return true
+    return v, true
 }
 
 type UserArg struct{}
@@ -146,16 +142,15 @@ func (u *UserArg) Help() string {
 	return "Mention/ID"
 }
 
-func (u *UserArg) ValidateArg(arg *ParsedArg, data *Data) bool {
+func (u *UserArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
 	id := arg.Raw
 
 	user, err := data.Session.User(id)
 	if err != nil {
-		return false
+		return nil, false
 	}
 
-	arg.Value = user
-	return true
+	return user, true
 }
 
 type MemberArg struct{}
@@ -164,16 +159,15 @@ func (m *MemberArg) Help() string {
 	return "Mention/ID"
 }
 
-func (m *MemberArg) ValidateArg(arg *ParsedArg, data *Data) bool {
+func (m *MemberArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
 	id := arg.Raw
 
 	member, err := data.Session.State.Member(data.Guild.ID, id)
 	if err != nil {
-		return false
+		return nil, false
 	}
 
-	arg.Value = member
-	return true
+	return member, true
 }
 
 type DurationArg struct{}
@@ -182,14 +176,13 @@ func (d *DurationArg) Help() string {
 	return "Duration"
 }
 
-func (d *DurationArg) ValidateArg(arg *ParsedArg, data *Data) bool {
+func (d *DurationArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
 	v := arg.Raw
 
 	duration, err := durationutil.ToDuration(v)
 	if err != nil {
-		return false
+		return nil, false
 	}
 
-	arg.Value = duration
-	return true
+	return duration, true
 }

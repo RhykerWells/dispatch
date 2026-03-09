@@ -58,9 +58,12 @@ func parsePositionalArgs(cmd *Command, data *Data, args []string) error {
 			continue
 		}
 
-		if !pArg.Def.Type.ValidateArg(pArg, data) {
+		value, ok := pArg.Def.Type.ValidateArg(pArg, data)
+		if !ok {
 			return fmt.Errorf("Invalid `%s` argument. Expected: `%s`", pArg.Def.Name, pArg.Def.Type.Help())
 		}
+
+		pArg.Value = value
 	}
 
 	data.ParsedArgs = parsedArgs
@@ -148,8 +151,13 @@ if argsLeft <= 0 {
 
 		// Validate if value is provided
 		p := &ParsedArg{Def: def, Raw: value}
-		if value != "" && !def.Type.ValidateArg(p, data) {
-			return nil, fmt.Errorf("Invalid `%s` argument. Expected: `%s`", def.Name, def.Type.Help())
+		if value != "" {
+			value, ok := def.Type.ValidateArg(p, data)
+			if !ok {
+				return nil, fmt.Errorf("Invalid `%s` argument. Expected: `%s`", def.Name, def.Type.Help())
+			}
+
+			p.Value = value
 		}
 
 		parsedArgs[defPos] = p
