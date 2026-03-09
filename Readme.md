@@ -1,9 +1,7 @@
 # Dispatch
-
 A lightweight Discord bot command framework for Go. Dispatch simplifies building command-driven Discord bots with support for argument parsing, permission checking, prefix configuration, and command aliases.
 
 ## Features
-
 - **Easy Command Registration**: Register commands with a simple, declarative API
 - **Automatic Message Routing**: Built-in Discord message event handling and command dispatch
 - **Flexible Argument Parsing**: Support for multiple argument types (strings, integers, users, members, durations, custom types)
@@ -13,7 +11,6 @@ A lightweight Discord bot command framework for Go. Dispatch simplifies building
 - **Argument Combinations**: Define flexible argument requirement patterns
 
 ## Installation
-
 ```bash
 go get github.com/RhykerWells/dispatch
 ```
@@ -21,7 +18,6 @@ go get github.com/RhykerWells/dispatch
 ## Quick Start
 
 ### 1. Create a CommandHandler
-
 ```go
 package main
 
@@ -43,7 +39,6 @@ func main() {
 ```
 
 ### 2. Define Commands
-
 ```go
 // Create a simple ping command
 pingCmd := &dispatch.Command{
@@ -75,19 +70,16 @@ echoCmd := &dispatch.Command{
 ```
 
 ### 3. Register Commands
-
 ```go
 handler.RegisterCommands(pingCmd, echoCmd)
 ```
 
 ### 4. Attach to Discord Session
-
 ```go
 session.AddHandler(handler.HandleMessageCreate)
 ```
 
 ## Argument Types
-
 Dispatch provides several built-in argument types.
 > **Note:** Argument values are stored as `interface{}` and must be type asserted to their expected Go type.
 > Built-in argument types return the following values:
@@ -95,13 +87,13 @@ Dispatch provides several built-in argument types.
 | Type | Go Type returned | Description |
 |------|---------|-------------|
 | `dispatch.String` | `string` | Plain text argument with optional string options |
-| `dispatch.Int` | `int64` | Integer argument with optional min/max bounds |
+| `dispatch.Int` | `int` | Integer argument with optional min/max bounds |
+| `dispatch.Int64` | `int64` | Integer argument with optional min/max bounds |
 | `dispatch.User` | `*discordgo.User` | Discord user mention/ID |
 | `dispatch.Member` | `*discordgo.Member` | Discord member mention/ID |
 | `dispatch.Duration` | `time.Duration` | Duration string (e.g., "5m", "1h30m") |
 
 ### Example with Multiple Arguments
-
 ```go
 kickCmd := &dispatch.Command{
 	Command:     "kick",
@@ -127,7 +119,6 @@ kickCmd := &dispatch.Command{
 ```
 
 ## Permission Management
-
 Enforce permissions with `RequiredUserPerms` and `RequiredBotPerms`:
 
 ```go
@@ -148,7 +139,6 @@ banCmd := &dispatch.Command{
 ```
 
 ## Command Categories
-
 Organize commands logically using categories:
 
 ```go
@@ -165,7 +155,6 @@ cmd := &dispatch.Command{
 ```
 
 ## Data Available in Commands
-
 Each command's `Run` function receives a `*dispatch.Data` object with:
 
 - **Session**: The Discord session
@@ -178,7 +167,6 @@ Each command's `Run` function receives a `*dispatch.Data` object with:
 - **Handler**: Reference to the command handler
 
 ## Example Discord Bot
-
 ```go
 package main
 
@@ -221,21 +209,18 @@ func main() {
 ## Advanced Usage
 
 ### Custom Argument Types
-
 Implement the `ArgumentType` interface to create custom argument validators:
-The `ValidateArg` method should both **validate and parse** the argument value so the
+The `ValidateArg` method should return both the parsed data & if successfully parsed so that the
 result stored in `ParsedArgs[i].Value` can be safely type asserted in the command handler.
-
 ```go
 type CustomArg struct{}
 
 var _ dispatch.ArgumentType = (*CustomArg)(nil)
 
-func (c *CustomArg) ValidateArg(arg *dispatch.ParsedArg, data *dispatch.Data) bool {
+func (c *CustomArg) ValidateArg(arg *dispatch.ParsedArg, data *dispatch.Data) (any, bool) {
 	// Validation logic
-
-	arg.Value = ///
-	return true
+	value := //// 
+	return value, true
 }
 
 func (c *CustomArg) Help() string {
@@ -245,7 +230,6 @@ func (c *CustomArg) Help() string {
 
 
 ### Argument Combinations
-
 Define flexible argument patterns using argument combinations:
 
 ```go
@@ -264,7 +248,6 @@ cmd := &dispatch.Command{
 ```
 
 ## Important Notes
-
 - **Prefix**: Default prefix is `~`. Customize it with `SetPrefixFunc()`
 - **Aliases**: Limited to 3 non-empty aliases per command
 - **Bot Detection**: Bot messages and self-messages are automatically ignored
@@ -272,11 +255,9 @@ cmd := &dispatch.Command{
 - **Permissions**: Permission checking is automatic when `RequiredUserPerms` or `RequiredBotPerms` are set
 
 ## Dependencies
-
 - `github.com/bwmarrin/discordgo` - Discord API client
 - `github.com/RhykerWells/durationutil` - Duration parsing utilities
 - `github.com/sirupsen/logrus` - Logging
 
 ## License
-
 See LICENSE file for details.
