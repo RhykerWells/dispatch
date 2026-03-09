@@ -17,7 +17,7 @@ type CommandHandler struct {
 // NewCommandHandler creates a new command handler
 func NewCommandHandler() *CommandHandler {
 	handler := &CommandHandler{
-		Prefix: func(string) string { return "~" },
+		Prefix:       func(string) string { return "~" },
 		cmdInstances: make([]*Command, 0),
 		cmdMap:       make(map[string]*Command),
 	}
@@ -100,7 +100,6 @@ func (c *CommandHandler) HandleMessageCreate(s *discordgo.Session, e *discordgo.
 	if err != nil {
 		channel, _ = s.Channel(e.ChannelID)
 	}
-
 
 	data := &Data{
 		Session:    s,

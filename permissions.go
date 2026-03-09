@@ -43,7 +43,6 @@ func permissionName(perm int64) string {
 	return "Unknown Permission"
 }
 
-
 // hasRequiredPermissions runs the permission validation for the user & bot in the current channel
 func hasRequiredPermissions(cmd *Command, data *Data) error {
 	err := hasUserPermissions(cmd, data)

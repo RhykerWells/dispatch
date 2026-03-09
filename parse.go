@@ -111,13 +111,13 @@ func parseCombo(cmd *Command, data *Data, combo []int, args []string) ([]*Parsed
 		argsLeft := len(args) - argIdx
 		remainingComboArgs := len(combo) - (i + 1)
 
-if argsLeft <= 0 {
-    return nil, fmt.Errorf(
-        "Missing argument `%s`. Expected: `%s`",
-        def.Name,
-        def.Type.Help(),
-    )
-}
+		if argsLeft <= 0 {
+			return nil, fmt.Errorf(
+				"Missing argument `%s`. Expected: `%s`",
+				def.Name,
+				def.Type.Help(),
+			)
+		}
 
 		// String argument logic
 		if def.Type == String {

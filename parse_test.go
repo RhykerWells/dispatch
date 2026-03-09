@@ -1,8 +1,8 @@
 package dispatch
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 // Test parsePositionalArgs
@@ -55,7 +55,7 @@ func TestParsePositionalArgs(t *testing.T) {
 // Test parseComboArgs
 func TestParseComboArgs(t *testing.T) {
 	cmd := &Command{
-		Command:      "test",
+		Command: "test",
 		ArgumentCombos: [][]int{
 			{0, 1}, // Combo 1: arg1 and arg2
 		},

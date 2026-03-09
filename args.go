@@ -30,7 +30,7 @@ type ParsedArg struct {
 var (
 	String   = &StringArg{}
 	Int      = &IntArg{}
-	Int64	 = &Int64Arg{}
+	Int64    = &Int64Arg{}
 	User     = &UserArg{}
 	Member   = &MemberArg{}
 	Duration = &DurationArg{}
@@ -90,20 +90,20 @@ func (i *IntArg) Help() string {
 }
 
 func (i *IntArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
-    v, err := strconv.Atoi(arg.Raw)
-    if err != nil {
-        return nil, false
-    }
+	v, err := strconv.Atoi(arg.Raw)
+	if err != nil {
+		return nil, false
+	}
 
-    if v < i.Min {
-        return nil, false
-    }
+	if v < i.Min {
+		return nil, false
+	}
 
-    if i.Max != 0 && v > i.Max {
-        return nil, false
-    }
+	if i.Max != 0 && v > i.Max {
+		return nil, false
+	}
 
-    return v, true
+	return v, true
 }
 
 type Int64Arg struct {
@@ -120,20 +120,20 @@ func (i *Int64Arg) Help() string {
 }
 
 func (i *Int64Arg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
-    v, err := strconv.ParseInt(arg.Raw, 10, 64)
-    if err != nil {
-        return nil, false
-    }
+	v, err := strconv.ParseInt(arg.Raw, 10, 64)
+	if err != nil {
+		return nil, false
+	}
 
-    if v < i.Min {
-        return nil, false
-    }
+	if v < i.Min {
+		return nil, false
+	}
 
-    if i.Max != 0 && v > i.Max {
-        return nil, false
-    }
+	if i.Max != 0 && v > i.Max {
+		return nil, false
+	}
 
-    return v, true
+	return v, true
 }
 
 type UserArg struct{}
