@@ -66,6 +66,7 @@ echoCmd := &dispatch.Command{
 	Args:         []*dispatch.Arg{{Name: "text", Type: dispatch.String}},
 	ArgsRequired: 1,
 	Run: func(data *dispatch.Data) error {
+		// Argument values are interface{} and must be type asserted
 		text := data.ParsedArgs[0].Value.(string)
 		data.Session.ChannelMessageSend(data.Channel.ID, text)
 		return nil
@@ -87,14 +88,16 @@ session.AddHandler(handler.HandleMessageCreate)
 
 ## Argument Types
 
-Dispatch provides the following built-in argument type validators:
+Dispatch provides several built-in argument types.
+> **Note:** Argument values are stored as `interface{}` and must be type asserted to their expected Go type.
+> Built-in argument types return the following values:
 
-| Type | Go Type | Description |
+| Type | Go Type returned | Description |
 |------|---------|-------------|
 | `dispatch.String` | `string` | Plain text argument with optional string options |
 | `dispatch.Int` | `int64` | Integer argument with optional min/max bounds |
-| `dispatch.User` | `*discordgo.User` | Discord user mention or ID |
-| `dispatch.Member` | `*discordgo.Member` | Discord server member |
+| `dispatch.User` | `*discordgo.User` | Discord user mention/ID |
+| `dispatch.Member` | `*discordgo.Member` | Discord member mention/ID |
 | `dispatch.Duration` | `time.Duration` | Duration string (e.g., "5m", "1h30m") |
 
 ### Example with Multiple Arguments
@@ -110,6 +113,7 @@ kickCmd := &dispatch.Command{
 	ArgsRequired: 1, // Member required, reason optional
 	RequiredBotPerms: []int64{discordgo.PermissionKickMembers},
 	Run: func(data *dispatch.Data) error {
+		// Argument values are interface{} and must be type asserted
 		member := data.ParsedArgs[0].Value.(*discordgo.Member)
 		reason := ""
 		if len(data.ParsedArgs) > 1 {
@@ -135,6 +139,7 @@ banCmd := &dispatch.Command{
 	Args:             []*dispatch.Arg{{Name: "user", Type: dispatch.User}},
 	ArgsRequired:     1,
 	Run: func(data *dispatch.Data) error {
+		// Argument values are interface{} and must be type asserted
 		user := data.ParsedArgs[0].Value.(*discordgo.User)
 		data.Session.GuildBanCreate(data.Guild.ID, user.ID, 0)
 		return nil
@@ -169,7 +174,7 @@ Each command's `Run` function receives a `*dispatch.Data` object with:
 - **Channel**: The channel where the command was invoked
 - **Author**: The user who invoked the command
 - **Message**: The original Discord message
-- **ParsedArgs**: Parsed and validated arguments
+- **ParsedArgs**: Parsed and validated arguments (When accessed, must be type asserted)
 - **Handler**: Reference to the command handler
 
 ## Example Discord Bot
@@ -194,7 +199,6 @@ func main() {
 	pingCmd := &dispatch.Command{
 		Command:      "ping",
 		Description:  "Ping pong",
-		ArgsRequired: 0,
 		Run: func(data *dispatch.Data) error {
 			data.Session.ChannelMessageSend(data.Channel.ID, "Pong! 🏓")
 			return nil
@@ -219,12 +223,18 @@ func main() {
 ### Custom Argument Types
 
 Implement the `ArgumentType` interface to create custom argument validators:
+The `ValidateArg` method should both **validate and parse** the argument value so the
+result stored in `ParsedArgs[i].Value` can be safely type asserted in the command handler.
 
 ```go
 type CustomArg struct{}
 
+var _ dispatch.ArgumentType = (*CustomArg)(nil)
+
 func (c *CustomArg) ValidateArg(arg *dispatch.ParsedArg, data *dispatch.Data) bool {
 	// Validation logic
+
+	arg.Value = ///
 	return true
 }
 
@@ -232,6 +242,7 @@ func (c *CustomArg) Help() string {
 	return "Custom argument type"
 }
 ```
+
 
 ### Argument Combinations
 
@@ -247,7 +258,6 @@ cmd := &dispatch.Command{
 		{0, 1, 2},  // All three
 	},
 	Run: func(data *dispatch.Data) error {
-		// Handle based on number of arguments
 		return nil
 	},
 }
