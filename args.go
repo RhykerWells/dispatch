@@ -30,6 +30,7 @@ type ParsedArg struct {
 var (
 	String   = &StringArg{}
 	Int      = &IntArg{}
+	Int64	 = &Int64Arg{}
 	User     = &UserArg{}
 	Member   = &MemberArg{}
 	Duration = &DurationArg{}
@@ -38,6 +39,7 @@ var (
 var (
 	_ ArgumentType = (*StringArg)(nil)
 	_ ArgumentType = (*IntArg)(nil)
+	_ ArgumentType = (*Int64Arg)(nil)
 	_ ArgumentType = (*UserArg)(nil)
 	_ ArgumentType = (*MemberArg)(nil)
 	_ ArgumentType = (*DurationArg)(nil)
@@ -77,8 +79,8 @@ func (s *StringArg) ValidateArg(arg *ParsedArg, data *Data) bool {
 }
 
 type IntArg struct {
-	Min int64
-	Max int64
+	Min int
+	Max int
 }
 
 func (i *IntArg) Help() string {
@@ -90,6 +92,37 @@ func (i *IntArg) Help() string {
 }
 
 func (i *IntArg) ValidateArg(arg *ParsedArg, data *Data) bool {
+    v, err := strconv.Atoi(arg.Raw)
+    if err != nil {
+        return false
+    }
+
+    if v < i.Min {
+        return false
+    }
+
+    if i.Max != 0 && v > i.Max {
+        return false
+    }
+
+    arg.Value = v
+    return true
+}
+
+type Int64Arg struct {
+	Min int64
+	Max int64
+}
+
+func (i *Int64Arg) Help() string {
+	var maxStr string
+	if i.Max != 0 {
+		maxStr = fmt.Sprintf(" and below %d", i.Max)
+	}
+	return fmt.Sprintf("Whole number above %d%s", i.Min, maxStr)
+}
+
+func (i *Int64Arg) ValidateArg(arg *ParsedArg, data *Data) bool {
     v, err := strconv.ParseInt(arg.Raw, 10, 64)
     if err != nil {
         return false
