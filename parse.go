@@ -58,7 +58,7 @@ func parsePositionalArgs(cmd *Command, data *Data, args []string) error {
 			continue
 		}
 
-		value, ok := pArg.Def.Type.ValidateArg(pArg, data)
+		value, ok := pArg.Def.Type.ParseArg(pArg, data)
 		if !ok {
 			return fmt.Errorf("Invalid `%s` argument. Expected: `%s`", pArg.Def.Name, pArg.Def.Type.Help())
 		}
@@ -152,7 +152,7 @@ func parseCombo(cmd *Command, data *Data, combo []int, args []string) ([]*Parsed
 		// Validate if value is provided
 		p := &ParsedArg{Def: def, Raw: value}
 		if value != "" {
-			value, ok := def.Type.ValidateArg(p, data)
+			value, ok := def.Type.ParseArg(p, data)
 			if !ok {
 				return nil, fmt.Errorf("Invalid `%s` argument. Expected: `%s`", def.Name, def.Type.Help())
 			}

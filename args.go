@@ -15,7 +15,7 @@ type Arg struct {
 }
 
 type ArgumentType interface {
-	ValidateArg(arg *ParsedArg, data *Data) (any, bool)
+	ParseArg(arg *ParsedArg, data *Data) (any, bool)
 	Help() string
 }
 
@@ -57,7 +57,7 @@ func (s *StringArg) Help() string {
 	return "Text"
 }
 
-func (s *StringArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
+func (s *StringArg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
 	v := arg.Raw
 
 	if v == "" {
@@ -89,7 +89,7 @@ func (i *IntArg) Help() string {
 	return fmt.Sprintf("Whole number above %d%s", i.Min, maxStr)
 }
 
-func (i *IntArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
+func (i *IntArg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
 	v, err := strconv.Atoi(arg.Raw)
 	if err != nil {
 		return nil, false
@@ -119,7 +119,7 @@ func (i *Int64Arg) Help() string {
 	return fmt.Sprintf("Whole number above %d%s", i.Min, maxStr)
 }
 
-func (i *Int64Arg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
+func (i *Int64Arg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
 	v, err := strconv.ParseInt(arg.Raw, 10, 64)
 	if err != nil {
 		return nil, false
@@ -142,7 +142,7 @@ func (u *UserArg) Help() string {
 	return "Mention/ID"
 }
 
-func (u *UserArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
+func (u *UserArg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
 	id := arg.Raw
 
 	user, err := data.Session.User(id)
@@ -159,7 +159,7 @@ func (m *MemberArg) Help() string {
 	return "Mention/ID"
 }
 
-func (m *MemberArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
+func (m *MemberArg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
 	id := arg.Raw
 
 	member, err := data.Session.State.Member(data.Guild.ID, id)
@@ -176,7 +176,7 @@ func (d *DurationArg) Help() string {
 	return "Duration"
 }
 
-func (d *DurationArg) ValidateArg(arg *ParsedArg, data *Data) (any, bool) {
+func (d *DurationArg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
 	v := arg.Raw
 
 	duration, err := durationutil.ToDuration(v)

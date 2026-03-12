@@ -210,16 +210,17 @@ func main() {
 
 ### Custom Argument Types
 Implement the `ArgumentType` interface to create custom argument validators:
-The `ValidateArg` method should return both the parsed data & if successfully parsed so that the
+The `ParseArg` method should return both the parsed data & if successfully parsed so that the
 result stored in `ParsedArgs[i].Value` can be safely type asserted in the command handler.
 ```go
 type CustomArg struct{}
 
 var _ dispatch.ArgumentType = (*CustomArg)(nil)
 
-func (c *CustomArg) ValidateArg(arg *dispatch.ParsedArg, data *dispatch.Data) (any, bool) {
+func (c *CustomArg) ParseArg(arg *dispatch.ParsedArg, data *dispatch.Data) (any, bool) {
+	value := arg.Raw 
 	// Validation logic
-	value := //// 
+	// Return the value in whatever type you'd like
 	return value, true
 }
 
