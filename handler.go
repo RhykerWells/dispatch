@@ -10,6 +10,7 @@ import (
 // CommandHandler contains the prefix, the full instances of a command and a string map to retireve them
 type CommandHandler struct {
 	Prefix       func(string) string
+
 	cmdInstances []*Command
 	cmdMap       map[string]*Command
 }
@@ -103,6 +104,7 @@ func (c *CommandHandler) HandleMessageCreate(s *discordgo.Session, e *discordgo.
 
 	data := &Data{
 		Session:    s,
+		Bot: 		s.State.User,
 		Guild:      guild,
 		Channel:    channel,
 		Message:    e.Message,
