@@ -136,6 +136,24 @@ func (i *Int64Arg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
 	return v, true
 }
 
+func parseDiscordMentionID(raw string) string {
+	if raw == "" {
+		return ""
+	}
+
+	if strings.HasPrefix(raw, "<@") && strings.HasSuffix(raw, ">") {
+		if strings.HasPrefix(raw, "<@!") {
+			return strings.TrimSuffix(strings.TrimPrefix(raw, "<@!"), ">")
+		}
+		if strings.HasPrefix(raw, "<@&") {
+			return strings.TrimSuffix(strings.TrimPrefix(raw, "<@&"), ">")
+		}
+		return strings.TrimSuffix(strings.TrimPrefix(raw, "<@"), ">")
+	}
+
+	return raw
+}
+
 type UserArg struct{}
 
 func (u *UserArg) Help() string {
@@ -143,7 +161,7 @@ func (u *UserArg) Help() string {
 }
 
 func (u *UserArg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
-	id := arg.Raw
+	id := parseDiscordMentionID(arg.Raw)
 
 	user, err := data.Session.User(id)
 	if err != nil {
@@ -160,7 +178,7 @@ func (m *MemberArg) Help() string {
 }
 
 func (m *MemberArg) ParseArg(arg *ParsedArg, data *Data) (any, bool) {
-	id := arg.Raw
+	id := parseDiscordMentionID(arg.Raw)
 
 	member, err := data.Session.State.Member(data.Guild.ID, id)
 	if err != nil {
